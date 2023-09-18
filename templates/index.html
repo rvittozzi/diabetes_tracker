@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Tracker</title>
+</head>
+<body>
+    <h1>Diabetes Tracker</h1>
+    <form method="POST" action="/">
+        <label for="date">Enter the date (YYYY-MM-DD):</label>
+        <input type="text" id="date" name="date" required>
+        <label for="blood_sugar">Enter the blood sugar level (mg/dL):</label>
+        <input type="number" id="blood_sugar" name="blood_sugar" required>
+        <button type="submit">Add Entry</button>
+    </form>
+    <hr>
+    <h2>Entries:</h2>
+    <ul>
+        {% for entry in entries %}
+            <li>{{ entry['Date'] }} - {{ entry['Blood Sugar (mg/dL)'] }}</li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <h2>Plot:</h2>
+    <img src="{{ plot_image }}" alt="Blood Sugar Plot">
+    <form method="GET" action="/clear_data">
+        <button type="submit">Clear Data</button>
+    </form>
+</body>
+</html>

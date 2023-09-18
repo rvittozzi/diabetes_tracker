@@ -1,28 +1,37 @@
+from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
-import tkinter as tk
-from tkinter import ttk
+import os
 
+app = Flask(__name__)
+
+# Initialize the CSV file path
+csv_file = "diabetes_data.csv"
 
 # Initialize an empty list to store entries
 entries = []
 
-# Initialize a tkinter window
-root = tk.Tk()
-root.title("Diabetes Tracker")
+# Function to load existing data from the CSV file
+def load_data():
+    if os.path.exists(csv_file):
+        df = pd.read_csv(csv_file)
+        df["Date"] = pd.to_datetime(df["Date"])
+        entries.extend(df.to_dict(orient="records"))
 
 # Function to add a new entry
 def add_entry():
-    date_str = date_entry.get()
-    blood_sugar = float(blood_sugar_entry.get())
+    date_str = request.form.get("date")
+    blood_sugar = float(request.form.get("blood_sugar"))
     date = datetime.strptime(date_str, "%Y-%m-%d")
     entry = {"Date": date, "Blood Sugar (mg/dL)": blood_sugar}
     entries.append(entry)
-    update_entries_list()
-    date_entry.delete(0, "end")
-    blood_sugar_entry.delete(0, "end")
-    status_label.config(text="Entry added successfully!")
+
+    # Save the entry to the CSV file
+    df = pd.DataFrame(entries)
+    df.to_csv(csv_file, index=False)
+
+    return redirect(url_for("index"))
 
 # Function to update the entries list in the GUI
 def update_entries_list():
@@ -33,34 +42,32 @@ def update_entries_list():
 # Function to plot the data
 def plot_data():
     if not entries:
-        status_label.config(text="No data to plot.")
-        return
+        return None
     df = pd.DataFrame(entries)
     df.set_index("Date", inplace=True)
+    plt.figure(figsize=(10, 6))
     df.plot(title="Blood Sugar Tracker")
     plt.xlabel("Date")
     plt.ylabel("Blood Sugar (mg/dL)")
-    plt.show()
+    plt.savefig("static/plot.png")
+    return "static/plot.png"
 
-# Create and configure GUI elements
-date_label = ttk.Label(root, text="Enter the date (YYYY-MM-DD):")
-date_entry = ttk.Entry(root)
-blood_sugar_label = ttk.Label(root, text="Enter the blood sugar level (mg/dL):")
-blood_sugar_entry = ttk.Entry(root)
-add_button = ttk.Button(root, text="Add Entry", command=add_entry)
-entries_list = tk.Listbox(root, width=50, height=10)
-plot_button = ttk.Button(root, text="Plot Data", command=plot_data)
-status_label = ttk.Label(root, text="")
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        return add_entry()
+    load_data()
+    return render_template("index.html", entries=entries, plot_image=plot_data())
 
-# Arrange GUI elements using grid layout
-date_label.grid(row=0, column=0, padx=10, pady=5, sticky="e")
-date_entry.grid(row=0, column=1, padx=10, pady=5)
-blood_sugar_label.grid(row=1, column=0, padx=10, pady=5, sticky="e")
-blood_sugar_entry.grid(row=1, column=1, padx=10, pady=5)
-add_button.grid(row=2, column=0, columnspan=2, pady=10)
-entries_list.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
-plot_button.grid(row=4, column=0, columnspan=2, pady=10)
-status_label.grid(row=5, column=0, columnspan=2, pady=5)
+@app.route("/clear_data")
+def clear_data():
+    global entries
+    entries = []
+    # Clear the CSV file by overwriting it with an empty DataFrame
+    df = pd.DataFrame(columns=["Date", "Blood Sugar (mg/dL)"])
+    df.to_csv(csv_file, index=False)
+    return redirect(url_for("index"))
 
-# Start the GUI main loop
-root.mainloop()
+if __name__ == "__main__":
+    load_data()  # Call load_data to load existing data
+    app.run(debug=True, port=3000)
