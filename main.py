@@ -3,6 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 import os
+import threading
+import time
+from plyer import notification
+from diabetes_utils import get_last_check_time
+from diabetes_data_module import get_blood_sugar_data_from_csv
 
 app = Flask(__name__)
 
@@ -33,12 +38,6 @@ def add_entry():
 
     return redirect(url_for("index"))
 
-# Function to update the entries list in the GUI
-def update_entries_list():
-    entries_list.delete(0, "end")
-    for entry in entries:
-        entries_list.insert("end", f"{entry['Date']} - {entry['Blood Sugar (mg/dL)']}")
-
 # Function to plot the data
 def plot_data():
     if not entries:
@@ -51,6 +50,21 @@ def plot_data():
     plt.ylabel("Blood Sugar (mg/dL)")
     plt.savefig("static/plot.png")
     return "static/plot.png"
+
+# Function to check blood sugar and send notifications
+def check_blood_sugar():
+    while True:
+        blood_sugar_data = get_blood_sugar_data_from_csv(csv_file)  # Get blood sugar data from the CSV
+        last_check_time = get_last_check_time()  # Get the last check time from the module
+
+        # ... Your existing code for notifications and reminders ...
+
+        time.sleep(3600)  # Repeat every hour
+
+# Create a separate thread for the reminder logic
+reminder_thread = threading.Thread(target=check_blood_sugar)
+reminder_thread.daemon = True
+reminder_thread.start()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
