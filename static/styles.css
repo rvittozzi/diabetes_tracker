@@ -1,10 +1,16 @@
 /* Apply styles to the body element */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #0077B6; /* Ocean blue background color */
-    color: #fff; /* Text color for ocean blue background */
+    font-family: 'Merriweather', serif;
+    background-color: #f6f6f6;
+    color: #333;
     margin: 0;
     padding: 0;
+    transition: all 0.3s ease;  /* Added for smooth transition */
+}
+
+/* Soft Background and High Contrast */
+.high-contrast {
+    color: #ff0000;
 }
 
 /* Style the navigation bar */
@@ -23,12 +29,13 @@ h1, h2, h3 {
     padding: 10px 20px;
     border: none;
     cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
 }
 
 /* Apply custom font to buttons */
 .btn.custom-font {
     font-family: "Your Desired Font", sans-serif;
-    /* You can add more font properties here, such as font-size, font-weight, etc. */
 }
 
 /* Style tables */
@@ -43,4 +50,30 @@ table, th, td {
 
 th, td {
     padding: 10px;
+}
+
+/* Card styling */
+.card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+/* Dark Mode styles */
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .navbar {
+    background-color: #333;
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .btn {
+    background-color: #666;
+    color: #ffffff;
 }

@@ -8,32 +8,40 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <!-- Link to your custom CSS file -->
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Diabetes App</a>
+        <a class="navbar-brand high-contrast" href="#">Diabetes App</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link high-contrast" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/clear_data">Clear Data</a>
+                    <a class="nav-link high-contrast" href="/clear_data">Clear Data</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/previous_results">Previous Results</a>
+                    <a class="nav-link high-contrast" href="/previous_results">Previous Results</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link high-contrast" href="/chart">Chart</a>
                 </li>
             </ul>
+            <!-- Dark Mode Toggle Button -->
+            <button id="dark-mode-toggle" class="btn btn-secondary ml-auto">Toggle Dark Mode</button>
         </div>
     </nav>
 
-    <!-- Main Content Container -->
+    <!-- Main Content -->
     <div class="container mt-4">
         <h1>Welcome to Your Diabetes App Dashboard</h1>
 
@@ -50,21 +58,25 @@
                         <label for="blood_sugar">Blood Sugar (mg/dL):</label>
                         <input type="number" class="form-control" id="blood_sugar" name="blood_sugar">
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary custom-font">Submit</button>
                 </form>
             </div>
         </div>
+    </div>
 
-        <!-- Display Blood Sugar Chart -->
-        <div class="card mt-4">
-            <div class="card-body">
-                <h2>Blood Sugar Chart</h2>
-                <img src="{{ plot_image }}" alt="Blood Sugar Chart" class="img-fluid">
-            </div>
-        </div>
-    <!-- Bootstrap JavaScript and dependencies -->
+    <!-- Bootstrap JavaScript and Dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+
+        darkModeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+        });
+    </script>
 </body>
 </html>
