@@ -4,28 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diabetes Tracker</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Link to your custom CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Diabetes Tracker</h1>
-    <form method="POST" action="/">
-        <label for="date">Enter the date (YYYY-MM-DD):</label>
-        <input type="text" id="date" name="date" required>
-        <label for="blood_sugar">Enter the blood sugar level (mg/dL):</label>
-        <input type="number" id="blood_sugar" name="blood_sugar" required>
-        <button type="submit">Add Entry</button>
-    </form>
-    <hr>
-    <h2>Entries:</h2>
-    <ul>
-        {% for entry in entries %}
-            <li>{{ entry['Date'] }} - {{ entry['Blood Sugar (mg/dL)'] }}</li>
-        {% endfor %}
-    </ul>
-    <hr>
-    <h2>Plot:</h2>
-    <img src="{{ plot_image }}" alt="Blood Sugar Plot">
-    <form method="GET" action="/clear_data">
-        <button type="submit">Clear Data</button>
-    </form>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Diabetes App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/clear_data">Clear Data</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container mt-4">
+        <h1>Welcome to Your Diabetes App Dashboard</h1>
+
+        <!-- Form for Adding New Entries -->
+        <div class="card">
+            <div class="card-body">
+                <h2>Add a New Entry</h2>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" class="form-control" id="date" name="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="blood_sugar">Blood Sugar (mg/dL):</label>
+                        <input type="number" class="form-control" id="blood_sugar" name="blood_sugar">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display Blood Sugar Chart -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2>Blood Sugar Chart</h2>
+                <img src="{{ plot_image }}" alt="Blood Sugar Chart" class="img-fluid">
+            </div>
+        </div>
+
+        <!-- Display Existing Entries in a Table -->
+        <div class="mt-4">
+            <h2>Existing Entries</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Blood Sugar (mg/dL)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td>{{ entry["Date"] }}</td>
+                        <td>{{ entry["Blood Sugar (mg/dL)"] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
