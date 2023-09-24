@@ -26,15 +26,17 @@ def load_data():
 
 # Function to add a new entry
 def add_entry():
-    date_str = request.form.get("date")
-    blood_sugar = float(request.form.get("blood_sugar"))
-    date = datetime.strptime(date_str, "%Y-%m-%d")
-    entry = {"Date": date, "Blood Sugar (mg/dL)": blood_sugar}
-    entries.append(entry)
+    global entries
+    if request.method == "POST":
+        date_str = request.form.get("date")
+        blood_sugar = float(request.form.get("blood_sugar"))
+        date = datetime.strptime(date_str, "%Y-%m-%d")
+        entry = {"Date": date, "Blood Sugar (mg/dL)": blood_sugar}
+        entries.append(entry)
 
-    # Save the entry to the CSV file
-    df = pd.DataFrame(entries)
-    df.to_csv(csv_file, index=False)
+        # Save the entry to the CSV file
+        df = pd.DataFrame(entries)
+        df.to_csv(csv_file, index=False)
 
     return redirect(url_for("index"))
 
@@ -71,7 +73,8 @@ def index():
     if request.method == "POST":
         return add_entry()
     load_data()
-    return render_template("index.html", entries=entries, plot_image=plot_data())
+    plot_image = plot_data()  # Get the plot image filename
+    return render_template("index.html", entries=entries, plot_image=plot_image)
 
 @app.route("/clear_data")
 def clear_data():
@@ -81,6 +84,11 @@ def clear_data():
     df = pd.DataFrame(columns=["Date", "Blood Sugar (mg/dL)"])
     df.to_csv(csv_file, index=False)
     return redirect(url_for("index"))
+
+@app.route("/previous_results")
+def previous_results():
+    load_data()  # Load the data
+    return render_template("previous_results.html", entries=entries)
 
 if __name__ == "__main__":
     load_data()  # Call load_data to load existing data

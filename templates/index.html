@@ -26,6 +26,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/clear_data">Clear Data</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/previous_results">Previous Results</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -59,29 +62,6 @@
                 <img src="{{ plot_image }}" alt="Blood Sugar Chart" class="img-fluid">
             </div>
         </div>
-
-        <!-- Display Existing Entries in a Table -->
-        <div class="mt-4">
-            <h2>Existing Entries</h2>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Blood Sugar (mg/dL)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entry in entries %}
-                    <tr>
-                        <td>{{ entry["Date"] }}</td>
-                        <td>{{ entry["Blood Sugar (mg/dL)"] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <!-- Bootstrap JavaScript and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
