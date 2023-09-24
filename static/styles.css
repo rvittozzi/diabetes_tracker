@@ -1,7 +1,8 @@
 /* Apply styles to the body element */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #0077B6; /* Ocean blue background color */
+    color: #fff; /* Text color for ocean blue background */
     margin: 0;
     padding: 0;
 }
@@ -19,11 +20,15 @@ h1, h2, h3 {
 
 /* Style buttons */
 .btn {
-    background-color: #007bff;
-    color: #fff;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
+}
+
+/* Apply custom font to buttons */
+.btn.custom-font {
+    font-family: "Your Desired Font", sans-serif;
+    /* You can add more font properties here, such as font-size, font-weight, etc. */
 }
 
 /* Style tables */
