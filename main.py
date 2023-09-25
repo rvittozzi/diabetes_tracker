@@ -31,10 +31,6 @@ class User(db.Model):
     password = db.Column(db.String(120), nullable=False)
 
 
-def validate_entry(date, blood_sugar):
-    return True  # Add validation logic here
-
-
 def add_entry(date_str, blood_sugar):
     date = datetime.strptime(date_str, "%Y-%m-%d")
     new_entry = BloodSugarEntry(date=date, blood_sugar=blood_sugar)
