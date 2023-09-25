@@ -15,7 +15,7 @@ body {
 
 /* Style the navigation bar */
 .navbar {
-    background-color: #007bff;
+    background-color: #00a6ff;
     color: #fff;
 }
 
@@ -29,7 +29,7 @@ h1, h2, h3 {
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    background-color: #007bff;
+    background-color: #00a6ff;
     color: #fff;
 }
 
