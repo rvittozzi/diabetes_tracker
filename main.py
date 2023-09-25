@@ -31,8 +31,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-
-
+    
+    
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -48,6 +48,20 @@ def add_entry(date_str, blood_sugar):
     new_entry = BloodSugarEntry(date=date, blood_sugar=blood_sugar)
     db.session.add(new_entry)
     db.session.commit()
+
+
+def validate_entry(date_str, blood_sugar):
+    try:
+        # Validate the date string format
+        datetime.strptime(date_str, "%Y-%m-%d")
+
+        # Validate that blood_sugar can be converted to float
+        float(blood_sugar)
+
+        return True  # Validation passed
+    except ValueError:  # Catch any ValueErrors that may arise
+        flash("Invalid date or blood sugar value.")
+        return False  # Validation failed
 
 
 def plot_data(entries):
