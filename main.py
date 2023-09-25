@@ -1,38 +1,34 @@
 from functools import wraps
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import matplotlib.pyplot as plt
+import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///BloodSugarEntry.db'  # First database
-app.config['SQLALCHEMY_BINDS'] = {
-    'users': 'sqlite:///users.db'  # Second database
-}
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'combined.db')
+
 app.secret_key = "hercules"
 
 db = SQLAlchemy(app)
 
 
-# First database model
 class BloodSugarEntry(db.Model):
-    __tablename__ = 'blood_sugar_entry'
-    __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
     blood_sugar = db.Column(db.Float, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-
-# Second database model
 
 class User(db.Model):
-    __bind_key__ = 'users'  # Specify the database
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
-    
-    
+    entries = db.relationship('BloodSugarEntry', backref='user', lazy=True)
+    password_hash = db.Column(db.String(128))
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -40,37 +36,32 @@ def login_required(f):
             flash("You must be logged in to access this page.")
             return redirect(url_for("login"))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
-def add_entry(date_str, blood_sugar):
+def add_entry(date_str, blood_sugar, user_id):
     date = datetime.strptime(date_str, "%Y-%m-%d")
-    new_entry = BloodSugarEntry(date=date, blood_sugar=blood_sugar)
+    new_entry = BloodSugarEntry(date=date, blood_sugar=blood_sugar, user_id=user_id)
     db.session.add(new_entry)
     db.session.commit()
 
 
 def validate_entry(date_str, blood_sugar):
     try:
-        # Validate the date string format
         datetime.strptime(date_str, "%Y-%m-%d")
-
-        # Validate that blood_sugar can be converted to float
         float(blood_sugar)
-
-        return True  # Validation passed
-    except ValueError:  # Catch any ValueErrors that may arise
+        return True
+    except ValueError:
         flash("Invalid date or blood sugar value.")
-        return False  # Validation failed
+        return False
 
 
 def plot_data(entries):
     if not entries:
         return None
-
     dates = [entry.date for entry in entries]
     blood_sugar_levels = [entry.blood_sugar for entry in entries]
-
     plt.figure(figsize=(10, 6))
     plt.plot(dates, blood_sugar_levels)
     plt.title("Blood Sugar Tracker")
@@ -80,35 +71,18 @@ def plot_data(entries):
     return "static/plot.png"
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()  # Query the database
-
-        if user:
-            if user.password == password:  # Ideally, you should use hashing here
-                session["username"] = username
-                return redirect(url_for("index"))
-            else:
-                flash("Invalid password")
-        else:
-            flash("Username does not exist")
-
-    return render_template("login.html")
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        hashed_password = generate_password_hash(password, method='sha256')
+
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("Username already exists. Choose a different one.")
         else:
-            new_user = User(username=username, password=password)
+            new_user = User(username=username, password_hash=hashed_password)
             db.session.add(new_user)
             db.session.commit()
             flash("Registration successful. Please log in.")
@@ -116,7 +90,26 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/logout")
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        user = User.query.filter_by(username=username).first()
+
+        if user:
+            if check_password_hash(user.password_hash, password):
+                session["username"] = username
+                session["user_id"] = user.id
+                return redirect(url_for("index"))
+            else:
+                flash("Invalid password")
+        else:
+            flash("Username does not exist")
+    return render_template("login.html")
+
+
+@app.route("/logout", methods=['POST'])
 def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
@@ -128,11 +121,10 @@ def index():
     if request.method == "POST":
         date_str = request.form.get("date")
         blood_sugar = float(request.form.get("blood_sugar"))
-
+        user_id = session.get("user_id")
         if validate_entry(date_str, blood_sugar):
-            add_entry(date_str, blood_sugar)
+            add_entry(date_str, blood_sugar, user_id)
             return redirect(url_for("index"))
-
     entries = BloodSugarEntry.query.all()
     plot_image = plot_data(entries)
     return render_template("index.html", entries=entries, plot_image=plot_image)
@@ -146,11 +138,10 @@ def clear_data():
     return redirect(url_for("index"))
 
 
-@app.route("/previous_results")
-@login_required
+@app.route('/previous_results')
 def previous_results():
-    entries = BloodSugarEntry.query.all()
-    return render_template("previous_results.html", entries=entries)
+    all_entries = BloodSugarEntry.query.all()
+    return render_template('previous_results.html', entries=all_entries)
 
 
 @app.route("/chart")
@@ -161,18 +152,7 @@ def chart():
     return render_template("chart.html", plot_image=plot_image)
 
 
-# Add this line to explicitly set the table name (Optional)
-class BloodSugarEntry(db.Model):
-    __tablename__ = 'blood_sugar_entry'
-    __table_args__ = {'extend_existing': True}  # new line
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
-    blood_sugar = db.Column(db.Float, nullable=False)
-
-
-# ... (rest of the code remains the same)
-
 if __name__ == "__main__":
-    with app.app_context():  # Explicitly providing the Flask app context (Optional)
+    with app.app_context():
         db.create_all()
     app.run(debug=True, port=3000)

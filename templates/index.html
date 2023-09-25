@@ -79,5 +79,8 @@
             body.classList.toggle('dark-mode');
         });
     </script>
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>
