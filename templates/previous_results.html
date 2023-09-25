@@ -18,8 +18,8 @@
         <tbody>
             {% for entry in entries %}
             <tr>
-                <td>{{ entry["Date"] }}</td>
-                <td>{{ entry["Blood Sugar (mg/dL)"] }}</td>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.value }}</td>
             </tr>
             {% endfor %}
         </tbody>
