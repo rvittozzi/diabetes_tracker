@@ -125,7 +125,8 @@ def index():
         if validate_entry(date_str, blood_sugar):
             add_entry(date_str, blood_sugar, user_id)
             return redirect(url_for("index"))
-    entries = BloodSugarEntry.query.all()
+    user_id = session.get("user_id")
+    entries = BloodSugarEntry.query.filter_by(user_id=user_id).all()
     plot_image = plot_data(entries)
     return render_template("index.html", entries=entries, plot_image=plot_image)
 
@@ -133,21 +134,25 @@ def index():
 @app.route("/clear_data")
 @login_required
 def clear_data():
-    db.session.query(BloodSugarEntry).delete()
+    user_id = session.get("user_id")
+    BloodSugarEntry.query.filter_by(user_id=user_id).delete()
     db.session.commit()
     return redirect(url_for("index"))
 
 
 @app.route('/previous_results')
+@login_required
 def previous_results():
-    all_entries = BloodSugarEntry.query.all()
+    user_id = session.get("user_id")
+    all_entries = BloodSugarEntry.query.filter_by(user_id=user_id).all()
     return render_template('previous_results.html', entries=all_entries)
 
 
 @app.route("/chart")
 @login_required
 def chart():
-    entries = BloodSugarEntry.query.all()
+    user_id = session.get("user_id")
+    entries = BloodSugarEntry.query.filter_by(user_id=user_id).all()
     plot_image = plot_data(entries)
     return render_template("chart.html", plot_image=plot_image)
 
