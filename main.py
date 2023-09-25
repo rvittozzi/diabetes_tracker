@@ -25,6 +25,8 @@ class BloodSugarEntry(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)  # New Field
+    age = db.Column(db.Integer, nullable=False)  # New Field
     entries = db.relationship('BloodSugarEntry', backref='user', lazy=True)
     password_hash = db.Column(db.String(128))
 
@@ -76,13 +78,15 @@ def register():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        email = request.form.get("email")  # New Field
+        age = int(request.form.get("age"))  # New Field
         hashed_password = generate_password_hash(password, method='sha256')
 
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("Username already exists. Choose a different one.")
         else:
-            new_user = User(username=username, password_hash=hashed_password)
+            new_user = User(username=username, password_hash=hashed_password, email=email, age=age)
             db.session.add(new_user)
             db.session.commit()
             flash("Registration successful. Please log in.")
