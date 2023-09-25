@@ -4,19 +4,16 @@
     <title>Register</title>
 </head>
 <body>
-    <!-- Display flash messages here -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endwith %}
+    <h1>Register</h1>
+    <form action="/register" method="post">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required><br><br>
 
-    <form method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required><br><br>
+
         <input type="submit" value="Register">
     </form>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
 </body>
 </html>
