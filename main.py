@@ -41,7 +41,7 @@ def login_required(f):
 
 
 def add_entry(date_str, blood_sugar, user_id):
-    date = datetime.strptime(date_str, "%Y-%m-%d")
+    date = datetime.now()  # Current date and time
     new_entry = BloodSugarEntry(date=date, blood_sugar=blood_sugar, user_id=user_id)
     db.session.add(new_entry)
     db.session.commit()
