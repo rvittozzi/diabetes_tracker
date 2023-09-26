@@ -1,4 +1,3 @@
-<!-- chart.html -->
 <!DOCTYPE html>
 <html lang="en">
 <!-- (head section would be similar) -->
@@ -6,14 +5,16 @@
     <!-- (navbar section would be similar) -->
 
     <!-- Main Content -->
-    <div class="container mt-4">
-        <h1>Your Blood Sugar Chart</h1>
+    <div class="container mt-5">
+        <h1 class="mb-4">Your Blood Sugar Chart</h1>
 
         <!-- Blood Sugar Chart -->
-        <div class="card mt-4">
+        <div class="card chart-card mt-4">
             <div class="card-body">
-                <h2>Blood Sugar Chart</h2>
-                <img src="{{ plot_image }}" alt="Blood Sugar Chart" class="img-fluid">
+                <h2 class="mb-3">Blood Sugar Chart</h2>
+                <div class="chart-container">
+                    <img src="{{ plot_image }}" alt="Blood Sugar Chart" class="img-fluid chart-image">
+                </div>
             </div>
         </div>
     </div>

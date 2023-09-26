@@ -15,7 +15,7 @@ body {
 
 /* Style the navigation bar */
 .navbar {
-    background-color: #00a6ff;
+    background-color: #4CAF50;
     color: #fff;
 }
 
@@ -29,13 +29,18 @@ h1, h2, h3 {
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    background-color: #00a6ff;
+    background-color: #4CAF50;
     color: #fff;
+}
+
+/* Added hover effect on buttons */
+.btn:hover {
+    background-color: #4CAF50;
 }
 
 /* Apply custom font to buttons */
 .btn.custom-font {
-    font-family: "Your Desired Font", sans-serif;
+    font-family: "Merriweather", sans-serif;
 }
 
 /* Style tables */
@@ -76,4 +81,42 @@ th, td {
 .dark-mode .btn {
     background-color: #666;
     color: #ffffff;
+}
+
+/* Add margin to headings */
+h1.mb-4, h2.mb-3 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Styling for the chart card */
+.chart-card {
+    transition: box-shadow .3s;
+}
+
+.chart-card:hover {
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+/* Styling for chart container */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.chart-image {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Loader */
+.hidden {
+    display: none;
+}
+
+#loader {
+    /* Add your spinner styles */
 }

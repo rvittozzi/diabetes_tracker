@@ -2,27 +2,43 @@
 <html>
 <head>
     <title>Login</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+        }
+        .container {
+            text-align: center;
+            margin-top: 10%;
+        }
+        input[type=text], input[type=password] {
+            border: none;
+            border-bottom: 2px solid #4CAF50;
+            margin: 8px 0;
+            padding: 12px 20px;
+        }
+        input[type=submit] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <!-- Display flash messages here -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endwith %}
-
-    {% if session['username'] %}
-        <p>Welcome, {{ session['username'] }}!</p>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-        <form method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br>
+    <div class="container">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <input type="text" placeholder="Username" name="username" required>
+            <br>
+            <input type="password" placeholder="Password" name="password" required>
+            <br>
             <input type="submit" value="Login">
         </form>
-        <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
-    {% endif %}
+    </div>
 </body>
 </html>

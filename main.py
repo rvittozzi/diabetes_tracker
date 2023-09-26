@@ -52,7 +52,10 @@ def add_entry(date_str, blood_sugar, user_id):
 def validate_entry(date_str, blood_sugar):
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
-        float(blood_sugar)
+        blood_sugar = float(blood_sugar)
+        if blood_sugar < 1 or blood_sugar > 300:
+            flash("Invalid blood sugar value. Must be between 1 and 300.")
+            return False
         return True
     except ValueError:
         flash("Invalid date or blood sugar value.")
