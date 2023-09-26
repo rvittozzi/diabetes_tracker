@@ -164,6 +164,17 @@ def chart():
     return render_template("chart.html", plot_image=plot_image)
 
 
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    user_id = session.get('user_id')
+    user = User.query.filter_by(id=user_id).first()
+
+    # You could add logic to calculate statistics or other info here
+
+    return render_template('dashboard.html', user=user)
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

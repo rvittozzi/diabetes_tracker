@@ -111,6 +111,23 @@ h1.mb-4, h2.mb-3 {
     max-width: 100%;
     height: auto;
 }
+.form-control {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 8px 0;
+}
+
+.container {
+    background-color: #f6f6f6;  /* Same as rest of the app */
+    color: #333;  /* Same as rest of the app */
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 50px;
+}
 
 /* Loader */
 .hidden {
