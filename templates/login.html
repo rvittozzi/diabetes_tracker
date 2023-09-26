@@ -10,21 +10,20 @@
             text-align: center;
             margin-top: 10%;
         }
-        input[type=text], input[type=password] {
+        input[type=text], input[type=password], input[type=submit], input[type=button] {
             border: none;
             border-bottom: 2px solid #4CAF50;
             margin: 8px 0;
             padding: 12px 20px;
         }
-        input[type=submit] {
+        input[type=submit], input[type=button] {
             background-color: #4CAF50;
             color: white;
             padding: 14px 20px;
-            border: none;
             cursor: pointer;
             border-radius: 4px;
         }
-        input[type=submit]:hover {
+        input[type=submit]:hover, input[type=button]:hover {
             background-color: #45a049;
         }
     </style>
@@ -39,6 +38,9 @@
             <br>
             <input type="submit" value="Login">
         </form>
+        <br>
+        <!-- Register Button -->
+        <input type="button" value="Register" onclick="window.location.href='register';">
     </div>
 </body>
 </html>
