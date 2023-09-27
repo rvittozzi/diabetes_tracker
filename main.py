@@ -5,10 +5,22 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+import requests
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'combined.db')
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'MAIL_USERNAME'
+app.config['MAIL_PASSWORD'] = 'MAIL_PASSWORD'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+s = URLSafeTimedSerializer('Thisisasecret!')
 
 app.secret_key = "hercules"
 
@@ -29,6 +41,40 @@ class User(db.Model):
     age = db.Column(db.Integer, nullable=False)  # New Field
     entries = db.relationship('BloodSugarEntry', backref='user', lazy=True)
     password_hash = db.Column(db.String(128))
+
+    def generate_reset_token(self):
+        return s.dumps(self.email, salt='email-confirm')
+
+    def send_reset_email(self):
+        token = self.generate_reset_token()
+        subject = 'Password Reset Request'
+        body = f'''To reset your password, visit the following link:
+            {url_for('reset_password', token=token, _external=True)}
+            If you did not make this request, simply ignore this email.
+            '''
+        send_mailgun_email(subject, self.email, body)
+
+
+def send_mailgun_email(subject, recipient, body):
+    api_key = 'a037a2bfc78c5fae6d4de55cb1998792-db137ccd-37f0a575'
+    domain = 'sandbox1030159a78e741e7bc7a0f66e79e56c4.mailgun.org'
+
+    response = requests.post(
+        f"https://api.mailgun.net/v3/{domain}/messages",
+        auth=("api", api_key),
+        data={
+            "from": "Your Name <noreply@sandbox1030159a78e741e7bc7a0f66e79e56c4.mailgun.org>",
+            "to": recipient,
+            "subject": subject,
+            "text": body
+        }
+    )
+
+    if response.status_code == 200:
+        return True
+    else:
+        print("Failed to send email:", response.content)
+        return False
 
 
 def login_required(f):
@@ -173,6 +219,44 @@ def dashboard():
     # You could add logic to calculate statistics or other info here
 
     return render_template('dashboard.html', user=user)
+
+
+@app.route('/request_password', methods=['GET', 'POST'])
+def request_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            try:
+                user.send_reset_email()
+                flash('An email has been sent with instructions to reset your password.')
+            except Exception as e:
+                print("Failed to send email: ", e)
+                flash('Failed to send email.')
+    return render_template('reset_request.html')
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=3600)
+    except SignatureExpired:
+        flash('The token is expired!')
+        return redirect(url_for('reset_request'))
+
+    if request.method == 'POST':
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password_hash = generate_password_hash(password, method='sha256')
+            db.session.commit()
+            flash('Your password has been updated!')
+            return redirect(url_for('login'))
+        else:
+            flash('Invalid token!')
+            return redirect(url_for('reset_request'))
+
+    return render_template('reset_password.html')
 
 
 if __name__ == "__main__":

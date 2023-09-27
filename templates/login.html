@@ -38,9 +38,14 @@
             <br>
             <input type="submit" value="Login">
         </form>
-        <br>
         <!-- Register Button -->
         <input type="button" value="Register" onclick="window.location.href='register';">
+
+        <br>
+        <!-- Add this line for password reset -->
+        <p>Forgot your password? <a href="{{ url_for('request_password') }}">Click here to reset it</a>.</p>
+        <br>
+
     </div>
 </body>
 </html>
